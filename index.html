@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Jogo Multiplayer</title>
+  </head>
+  <body>
+    <h1>Jogo Multiplayer</h1>
+    <h2>Jogador 1</h2>
+    <p>Compartilhe o código abaixo com o Jogador 2:</p>
+    <p><strong id="codigo"></strong></p>
+    <hr>
+    <h2>Jogador 2</h2>
+    <p>Insira o código compartilhado pelo Jogador 1:</p>
+    <input type="text" id="codigo-input">
+    <button id="conectar-btn">Conectar</button>
+    <div id="status"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.min.js"></script>
+    <script>
+      // Cria um novo servidor Socket.io na porta 3000
+      const io = io = require('socket.io')(3000);
+      
+      // Define um namespace personalizado com um código aleatório de 4 dígitos
+      const codigo = Math.floor(Math.random() * 9000) + 1000;
+      const nsp = io.of('/' + codigo);
+      
+      // Quando a conexão é estabelecida
+      nsp.on('connection', function(socket) {
+        console.log('Jogador conectado!');
+        
+        // Quando uma mensagem é recebida do jogador
+        socket.on('mensagem-do-jogador', function(data) {
+          console.log('Dados recebidos do jogador:', data);
+          
+          // Envia a mensagem recebida para todos os jogadores (incluindo o remetente)
+          nsp.emit('mensagem-do-servidor', data);
+        });
+      });
+      
+      // Atualiza o código na interface do jogador 1
+      document.getElementById('codigo').innerHTML = codigo;
+      
+      // Quando o botão "Conectar" é clicado pelo jogador 2
+      document.getElementById('conectar-btn').addEventListener('click', function() {
+        const codigoInput = document.getElementById('codigo-input').value;
+        
+        // Conecta-se ao servidor Socket.io usando o código inserido pelo jogador 2
+        const socket = io('/' + codigoInput);
+        
+        // Quando a conexão é estabelecida
+        socket.on('connect', function() {
+          console.log('Conexão estabelecida com sucesso!');
+          document.getElementById('status').innerHTML = 'Conectado';
+        });
+        
+        // Quando uma mensagem é recebida do servidor
+        socket.on('mensagem-do-servidor', function(data) {
+          console.log('Dados recebidos do servidor:', data);
+        });
+      });
+    </script>
+  </body>
+</html>
