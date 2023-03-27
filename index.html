@@ -9,6 +9,7 @@
     <h2>Jogador 1</h2>
     <p>Compartilhe o código abaixo com o Jogador 2:</p>
     <p><strong id="codigo"></strong></p>
+    <button id="gerar-codigo-btn">Gerar código</button>
     <hr>
     <h2>Jogador 2</h2>
     <p>Insira o código compartilhado pelo Jogador 1:</p>
@@ -21,7 +22,7 @@
       const io = io = require('socket.io')(3000);
       
       // Define um namespace personalizado com um código aleatório de 4 dígitos
-      const codigo = Math.floor(Math.random() * 9000) + 1000;
+      let codigo;
       const nsp = io.of('/' + codigo);
       
       // Quando a conexão é estabelecida
@@ -37,8 +38,13 @@
         });
       });
       
-      // Atualiza o código na interface do jogador 1
-      document.getElementById('codigo').innerHTML = codigo;
+      // Quando o botão "Gerar código" é clicado pelo jogador 1
+      document.getElementById('gerar-codigo-btn').addEventListener('click', function() {
+        codigo = Math.floor(Math.random() * 9000) + 1000;
+        nsp.namespace = '/' + codigo;
+        console.log('Código gerado:', codigo);
+        document.getElementById('codigo').innerHTML = codigo;
+      });
       
       // Quando o botão "Conectar" é clicado pelo jogador 2
       document.getElementById('conectar-btn').addEventListener('click', function() {
@@ -57,9 +63,6 @@
         socket.on('mensagem-do-servidor', function(data) {
           console.log('Dados recebidos do servidor:', data);
         });
-        
-        // Envia uma mensagem para o servidor
-        socket.emit('mensagem-do-jogador', 'Olá, servidor!');
       });
     </script>
   </body>
