@@ -57,6 +57,9 @@
         socket.on('mensagem-do-servidor', function(data) {
           console.log('Dados recebidos do servidor:', data);
         });
+
+        // Mostra o código do jogador 2 na interface
+        document.getElementById('codigo').innerHTML = codigoInput;
       });
     </script>
   </body>
