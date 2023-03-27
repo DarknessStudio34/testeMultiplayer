@@ -7,9 +7,9 @@
   <body>
     <h1>Jogo Multiplayer</h1>
     <h2>Jogador 1</h2>
+    <button id="gerar-codigo-btn">Gerar Código</button>
     <p>Compartilhe o código abaixo com o Jogador 2:</p>
     <p><strong id="codigo"></strong></p>
-    <button id="gerar-codigo-btn">Gerar código</button>
     <hr>
     <h2>Jogador 2</h2>
     <p>Insira o código compartilhado pelo Jogador 1:</p>
@@ -21,9 +21,16 @@
       // Cria um novo servidor Socket.io na porta 3000
       const io = io = require('socket.io')(3000);
       
-      // Define um namespace personalizado com um código aleatório de 4 dígitos
       let codigo;
-      const nsp = io.of('/' + codigo);
+      
+      // Quando o botão "Gerar Código" é clicado pelo jogador 1
+      document.getElementById('gerar-codigo-btn').addEventListener('click', function() {
+        // Gera um código aleatório de 4 dígitos
+        codigo = Math.floor(Math.random() * 9000) + 1000;
+        
+        // Mostra o código gerado na interface do jogador 1
+        document.getElementById('codigo').innerHTML = codigo;
+      });
       
       // Quando a conexão é estabelecida
       nsp.on('connection', function(socket) {
@@ -36,14 +43,6 @@
           // Envia a mensagem recebida para todos os jogadores (incluindo o remetente)
           nsp.emit('mensagem-do-servidor', data);
         });
-      });
-      
-      // Quando o botão "Gerar código" é clicado pelo jogador 1
-      document.getElementById('gerar-codigo-btn').addEventListener('click', function() {
-        codigo = Math.floor(Math.random() * 9000) + 1000;
-        nsp.namespace = '/' + codigo;
-        console.log('Código gerado:', codigo);
-        document.getElementById('codigo').innerHTML = codigo;
       });
       
       // Quando o botão "Conectar" é clicado pelo jogador 2
@@ -67,3 +66,4 @@
     </script>
   </body>
 </html>
+
